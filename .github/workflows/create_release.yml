@@ -190,8 +190,9 @@ jobs:
 
           ### Release contents:
           - [mos_${{ env.VERSION }}_amd64.zip](https://github.com/ich777/mos-rootfs/releases/tag/${{ env.VERSION }}) - for installation to physical media
+            (The disk must be formatted with FAT32 and the disk must have the label: `MOS`)
           - [mos_amd64.img.xz](https://github.com/ich777/mos-rootfs/releases/tag/${{ env.VERSION }}) - for installation to VMs
-            (to extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
+            (To extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
         draft: false
         prerelease: ${{ env.PRERELEASE }}
 

@@ -1,0 +1,239 @@
+name: Create MOS Release
+
+on:
+  # Allow to trigger action manually
+  workflow_dispatch:
+    inputs:
+      mos_version:
+        description: 'MOS Version'
+        required: false
+        default: '0.0.1-alpha1'
+        type: string
+
+jobs:
+  create_release:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+
+    - name: Install dependencies
+      run: apt-get update && apt-get -y install parted mtools dosfstools zip
+
+    - name: Create Release
+      run: |
+        # Set Variables and create directories
+        WORKDIR=${{ github.workspace }}
+        PACKAGE=$WORKDIR/package
+        mkdir -p $PACKAGE/EFI/BOOT $PACKAGE/grub
+
+        # Get JSONs
+        ROOTFS_JSON=$(curl -s --request GET \
+            --url "https://api.github.com/repos/ich777/mos-rootfs/releases?per_page=50" \
+            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "X-GitHub-Api-Version: 2022-11-28")
+
+        KERNEL_JSON=$(curl -s --request GET \
+            --url "https://api.github.com/repos/ich777/mos-kernel/releases?per_page=50" \
+            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "X-GitHub-Api-Version: 2022-11-28")
+
+        GRUB_JSON=$(curl -s --request GET \
+            --url "https://api.github.com/repos/ich777/mos-grub/releases/latest" \
+            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "X-GitHub-Api-Version: 2022-11-28")
+
+        GRUB_DEB=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb")) | .id')
+        GRUB_DEB_MD5=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb.md5")) | .id')
+
+        # Set VERSION
+        if [ ! -z "${{ github.event.inputs.mos_version }}" ] ; then
+          VERSION=$(echo $ROOTFS_JSON | jq -r '.[].tag_name' | sort -V | tail -1)
+        else
+          VERSION="${{ github.event.inputs.mos_version }}"
+        fi
+
+        # Check if VERSION is empty
+        if [ -z "$VERSION" ] ; then
+          echo "VERSION string empty"
+          exit 1
+        fi
+
+        # Get Assets from rootfs
+        ASSET_ROOTFS=$(echo $ROOTFS_JSON | jq --arg version $VERSION -r '.[] | select(.tag_name == $version) | .assets[] | select(.name == "rootfs") | .id')
+        ASSET_ROOTFS_MD5=$(echo $ROOTFS_JSON | jq --arg version $VERSION -r '.[] | select(.tag_name == $version) | .assets[] | select(.name == "rootfs.md5") | .id')
+        ASSET_RELEASE_JSON=$(echo $ROOTFS_JSON | jq --arg version $VERSION -r '.[] | select(.tag_name == $version) | .assets[] | select(.name == "mos-release.json") | .id')
+
+        # Get mos-release.json
+        RELEASE_JSON=$(curl -s -L \
+          --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+          --header "Accept: application/octet-stream" \
+          --header "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/ich777/mos-rootfs/releases/assets/$ASSET_RELEASE_JSON")
+
+        # Get recommended Kernel version for release
+        RECOMMENDED_KERNEL=$(echo $RELEASE_JSON | jq -r '.mos.recommended_kernel')
+
+        # Get Assets from Kernel
+        ASSET_KERNEL=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "image") | .id')
+        ASSET_DRIVERS=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "drivers") | .id')
+        ASSET_KERNEL_MD5=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "image.md5") | .id')
+        ASSET_DRIVERS_MD5=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "drivers.md5") | .id')
+
+        # Define download asset function including md5 check
+        download_asset() {
+          echo "Downloading file: ${2##*/}"
+          curl --progress-bar -L \
+            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --output "$2" \
+            "https://api.github.com/repos/ich777/mos-$1/releases/assets/$3"
+        
+          if [[ "$2" == *.md5 ]]; then
+            echo "Checking md5"
+            if [ "$(md5sum ${2%.*} | awk '{print $1}')" == "$(cat $2)" ] ; then
+              echo "md5 OK"
+            else
+              echo "md5 ERROR"
+              exit 1
+            fi
+          fi
+        }
+
+        # Download assets
+        download_asset "rootfs" "$PACKAGE/rootfs" "$ASSET_ROOTFS"
+        download_asset "rootfs" "$PACKAGE/rootfs.md5" "$ASSET_ROOTFS_MD5"
+        download_asset "kernel" "$PACKAGE/image" "$ASSET_KERNEL"
+        download_asset "kernel" "$PACKAGE/image.md5" "$ASSET_KERNEL_MD5"
+        download_asset "kernel" "$PACKAGE/drivers" "$ASSET_DRIVERS"
+        download_asset "kernel" "$PACKAGE/drivers.md5" "$ASSET_DRIVERS_MD5"
+        download_asset "grub" "$WORKDIR/grub.deb" "$GRUB_DEB"
+        download_asset "grub" "$WORKDIR/grub.deb.md5" "$GRUB_DEB_MD5"
+
+        # Install GRUB
+        apt -y install $WORKDIR/grub.deb
+
+        # Install BOOTX64.EFI to package directory
+        grub-mkimage \
+            --format=x86_64-efi \
+            --output=$PACKAGE/EFI/BOOT/BOOTX64.EFI \
+            --prefix="/grub" \
+            normal configfile search search_fs_file search_fs_uuid part_gpt part_msdos fat
+
+        # Copy GRUB modules and create fonts and locale directories
+        cp -r /usr/lib/grub/x86_64-efi $PACKAGE/grub/
+        mkdir -p $PACKAGE/grub/{fonts,locale}
+
+        # Download mos-boot-files
+        git clone https://oauth2:${{ secrets.MOS_TOKEN }}@github.com/ich777/mos-boot-files $WORKDIR/mos-boot-files
+
+        # Copy necessary mos-boot-files to package directory
+        cp -R $WORKDIR/mos-boot-files/config $WORKDIR/mos-boot-files/grub $PACKAGE
+
+        # Create 2G image file
+        dd if=/dev/zero of=$WORKDIR/mos_amd64.img bs=1M count=2048
+
+        # Prepare image for formatting
+        parted -s $WORKDIR/mos_amd64.img mklabel msdos
+        parted -s $WORKDIR/mos_amd64.img mkpart primary fat32 1MiB 100%
+        parted -s $WORKDIR/mos_amd64.img set 1 boot on
+
+        # Create FAT32 filesystem with label MOS
+        mkfs.fat -F 32 -n "MOS" $WORKDIR/mos_amd64.img
+
+        # Prepare config for mtools
+        echo "drive x: file=\"$WORKDIR/mos_amd64.img\"" > /root/.mtoolsrc
+
+        # Copy over files from package directory to image
+        mcopy -s $PACKAGE/* x:/
+
+        # Create xz archive from image
+        xz -9 -T0 $WORKDIR/mos_amd64.img
+
+        # Create zip archive from package directory
+        cd $PACKAGE
+        zip -9 -r $WORKDIR/mos_$VERSION_amd64.zip .
+
+        # Create md5 checksums
+        md5sum $WORKDIR/mos_amd64.img.xz | awk '{print $1}' > $WORKDIR/mos_amd64.img.xz.md5
+        md5sum $WORKDIR/mos_$VERSION_amd64.zip | awk '{print $1}' > $WORKDIR/mos_$VERSION_amd64.zip.md5
+
+        # Set if release is a prerelease
+        if [[ $VERSION == *alpha* ]]; then
+          PRERELEASE="true"
+        elif [[ $VERSION == *beta* ]]; then
+          PRERELEASE="true"
+        else
+          PRERELEASE="false"
+        fi
+
+        # Add necessary variables to environment
+        echo "VERSION=${VERSION}
+        PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.VERSION }}
+        release_name: "MOS ${{ env.VERSION }}"
+        body: |
+          MOS Release: v${{ env.VERSION }}
+          Note: MOS only supports UEFI boot by default
+
+          ### Release contents:
+          - [mos_${{ env.VERSION }}_amd64.zip](https://github.com/ich777/mos-rootfs/releases/tag/${{ env.VERSION }}) - for installation to physical media
+          - [mos_amd64.img.xz](https://github.com/ich777/mos-rootfs/releases/tag/${{ env.VERSION }}) - for installation to VMs
+            (to extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
+        draft: false
+        prerelease: ${{ env.PRERELEASE }}
+
+    - name: Upload xz Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ github.workspace }}/mos_amd64.img.xz
+        asset_name: mos_amd64.img.xz
+        asset_content_type: application/x-xz
+
+    - name: Upload xz md5 to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ github.workspace }}/mos_amd64.img.xz.md5
+        asset_name: mos_amd64.img.xz.md5
+        asset_content_type: text/plain
+
+    - name: Upload zip Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ github.workspace }}/mos_${{ env.VERSION }}_amd64.zip
+        asset_name: mos_${{ env.VERSION }}_amd64.zip
+        asset_content_type: application/zip
+
+    - name: Upload zip md5 to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ github.workspace }}/mos_${{ env.VERSION }}_amd64.zip.md5
+        asset_name: mos_${{ env.VERSION }}_amd64.zip.md5
+        asset_content_type: text/plain
+
+    - name: Cleanup
+      if: always()
+      run: rm -rf ${{ github.workspace }}/* ${{ github.workspace }}/.*

@@ -50,7 +50,7 @@ jobs:
         GRUB_DEB_MD5=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb.md5")) | .id')
 
         # Set VERSION
-        if [ ! -z "${{ github.event.inputs.mos_version }}" ] ; then
+        if [ -z "${{ github.event.inputs.mos_version }}" ] ; then
           VERSION=$(echo $ROOTFS_JSON | jq -r '.[].tag_name' | sort -V | tail -1)
         else
           VERSION="${{ github.event.inputs.mos_version }}"

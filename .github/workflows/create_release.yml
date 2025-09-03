@@ -7,7 +7,6 @@ on:
       mos_version:
         description: 'MOS Version'
         required: false
-        default: '0.0.1-alpha1'
         type: string
 
 jobs:

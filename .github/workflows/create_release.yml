@@ -51,7 +51,7 @@ jobs:
 
         # Set VERSION
         if [ -z "${{ github.event.inputs.mos_version }}" ] ; then
-          VERSION=$(echo $ROOTFS_JSON | jq -r '.[].tag_name' | sort -V | tail -1)
+          VERSION="$(echo $ROOTFS_JSON | jq -r '.[].tag_name' | sort -V | tail -1)"
         else
           VERSION="${{ github.event.inputs.mos_version }}"
         fi
@@ -61,6 +61,8 @@ jobs:
           echo "VERSION string empty"
           exit 1
         fi
+
+        echo "Release version: $VERSION"
 
         # Get Assets from rootfs
         ASSET_ROOTFS=$(echo $ROOTFS_JSON | jq --arg version $VERSION -r '.[] | select(.tag_name == $version) | .assets[] | select(.name == "rootfs") | .id')

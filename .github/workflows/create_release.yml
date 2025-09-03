@@ -157,11 +157,11 @@ jobs:
 
         # Create zip archive from package directory
         cd $PACKAGE
-        zip -9 -r $WORKDIR/mos_$VERSION_amd64.zip .
+        zip -9 -r $WORKDIR/mos_${VERSION}_amd64.zip .
 
         # Create md5 checksums
         md5sum $WORKDIR/mos_amd64.img.xz | awk '{print $1}' > $WORKDIR/mos_amd64.img.xz.md5
-        md5sum $WORKDIR/mos_$VERSION_amd64.zip | awk '{print $1}' > $WORKDIR/mos_$VERSION_amd64.zip.md5
+        md5sum $WORKDIR/mos_${VERSION}_amd64.zip | awk '{print $1}' > $WORKDIR/mos_${VERSION}_amd64.zip.md5
 
         # Set if release is a prerelease
         if [[ $VERSION == *alpha* ]]; then

@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
       with:
         fetch-depth: 1
 
@@ -78,11 +78,13 @@ jobs:
         # Get recommended Kernel version for release
         RECOMMENDED_KERNEL=$(echo $RELEASE_JSON | jq -r '.mos.recommended_kernel')
 
-        # Get Assets from Kernel
+        # Get Assets from Kernel, Drivers and Microcode
         ASSET_KERNEL=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "image") | .id')
         ASSET_DRIVERS=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "drivers") | .id')
+        ASSET_MICROCODE=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "microcode") | .id')
         ASSET_KERNEL_MD5=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "image.md5") | .id')
         ASSET_DRIVERS_MD5=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "drivers.md5") | .id')
+        ASSET_MICROCODE_MD5=$(echo $KERNEL_JSON | jq --arg kernel $RECOMMENDED_KERNEL -r '.[] | select(.tag_name == $kernel) | .assets[] | select(.name == "microcode.md5") | .id')
 
         # Define download asset function including md5 check
         download_asset() {
@@ -112,6 +114,8 @@ jobs:
         download_asset "kernel" "$PACKAGE/image.md5" "$ASSET_KERNEL_MD5"
         download_asset "kernel" "$PACKAGE/drivers" "$ASSET_DRIVERS"
         download_asset "kernel" "$PACKAGE/drivers.md5" "$ASSET_DRIVERS_MD5"
+        download_asset "kernel" "$PACKAGE/microcode" "$ASSET_MICROCODE"
+        download_asset "kernel" "$PACKAGE/microcode.md5" "$ASSET_MICROCODE_MD5"
         download_asset "grub" "$WORKDIR/grub.deb" "$GRUB_DEB"
         download_asset "grub" "$WORKDIR/grub.deb.md5" "$GRUB_DEB_MD5"
 
@@ -125,7 +129,7 @@ jobs:
             --prefix="/grub" \
             normal configfile search search_fs_file search_fs_uuid part_gpt part_msdos fat
 
-        # Copy GRUB modules and create fonts and locale directories
+        # Copy GRUB modules, create fonts and locale directories
         cp -r /usr/lib/grub/x86_64-efi $PACKAGE/grub/
         mkdir -p $PACKAGE/grub/{fonts,locale}
 

@@ -20,7 +20,7 @@ jobs:
         fetch-depth: 1
 
     - name: Install dependencies
-      run: apt-get update && apt-get -y install parted mtools dosfstools zip
+      run: apt-get update && apt-get -y install parted mtools dosfstools zip wget
 
     - name: Create Release
       run: |
@@ -240,6 +240,10 @@ jobs:
         asset_name: mos_${{ env.VERSION }}_amd64.zip.md5
         asset_content_type: text/plain
 
+    - name: Send Message
+      run: |
+        wget ${{ secrets.PUSH_URL }} --post-data "title=MOS&message=New MOS release: ${{ env.VERSION }} available&priority=5" &>/dev/null
+  
     - name: Cleanup
       if: always()
       run: rm -rf ${{ github.workspace }}/* ${{ github.workspace }}/.*

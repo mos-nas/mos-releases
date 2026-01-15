@@ -24,7 +24,7 @@ Alongside a set of essential system tools, including:
 - **Samba**
 - **NFS**
 - **NUT**
-- **Cron scheduling**
+- **Cron**
 - **...**
 
 Remote networking and access services such as **Wireguard**, **Tailscale** and **Netbird** are also supported and can be managed via the **command line interface (CLI)**.
@@ -185,13 +185,31 @@ MOS favors simplicity, transparency, and modularity.
 - No hidden services
 - No telemetry
 - No forced cloud dependencies
-- Features can be added or removed via plugins
-
-You install only what you actually need.
+- Features can be added or removed via plugins (WIP)
 
 ---
 
-## License
+## Repository scope
+This repository is responsible for assembling and building MOS release artifacts.
+It combines the MOS kernel, root filesystem, and drivers into bootable images
+and ZIP archives.
 
-The licensing model of MOS is split across different components:
-Please check the individual repositories for detailed license information.
+---
+
+## Licensing
+
+The contents of this repository (build scripts, configuration files, and automation)
+are licensed under the license specified in the `LICENSE` file.
+
+Different MOS components and repositories may use different licenses.
+This does **not** affect the licensing of third-party software included or packaged
+by MOS, which always remains licensed under its original upstream licenses.
+
+Please refer to the individual repositories for detailed licensing information.
+
+---
+
+## Third-Party Software
+
+This repository builds and packages third-party open-source software.
+The included components remain licensed under their original upstream licenses.

@@ -1,8 +1,13 @@
-# MOS a Minimal Operating System for Home Servers
+# MOS – a Minimal Operating System for Home Servers
+
+_(No, it's not an acronym. Or maybe it is.)_
 
 **MOS** is a lightweight operating system based on **[Devuan](https://www.devuan.org/)**, designed specifically for **small, energy‑efficient home servers**.
 
 The primary goal of MOS is to provide a simple, reliable, and low‑overhead platform for self‑hosting, virtualization, and homelab environments.
+
+This project started as a personal solution, and at some point I decided to **release it publicly to see if it resonates with others**.  
+MOS is still evolving, but the core ideas are already in place.
 
 ---
 
@@ -152,6 +157,17 @@ To run MOS reliably, the following minimum hardware requirements are recommended
 - **Network:** Ethernet or compatible network interface
 
 These requirements ensure stable operation of containerized workloads, virtualization features, and storage services.
+
+---
+
+## TODO
+
+MOS is at the very beginning of its journey.
+
+There are **a lot of things left to do**, including missing features, improvements, refactoring, and documentation.  
+While the project is still evolving, **breaking changes are intentionally avoided whenever possible** in order to maintain stability for early users.
+
+If you are interested in contributing or experimenting with MOS at an early stage, feedback and contributions are highly appreciated.
 
 ---
 

@@ -17,10 +17,12 @@ By default, MOS comes with support for:
 Alongside a set of essential system tools, including:
 
 - **Samba**
+- **NFS**
+- **NUT**
 - **Cron scheduling**
 - **...**
 
-Remote networking and access services such as **Tailscale** and **Netbird** are also supported and can be managed via the **command line interface (CLI)**.
+Remote networking and access services such as **Wireguard**, **Tailscale** and **Netbird** are also supported and can be managed via the **command line interface (CLI)**.
 
 ---
 
@@ -139,10 +141,37 @@ Related repositories and components of the MOS ecosystem:
 
 ---
 
+## Minimum System Requirements
+
+To run MOS reliably, the following minimum hardware requirements are recommended:
+
+- **CPU:** x86_64 compatible processor
+- **Memory:** 8 GB RAM
+- **Storage:** A USB Flash device or HDD/SSD/NVME to install the OS (if you don't want to boot from the USB Flash device)
+  (additional disks recommended for mergerfs / SnapRAID setups)
+- **Network:** Ethernet or compatible network interface
+
+These requirements ensure stable operation of containerized workloads, virtualization features, and storage services.
+
+---
+
 ## Contributing
 
 Contributions, bug reports, and feature requests are welcome.  
 Please use GitHub Issues to report bugs or discuss ideas before submitting larger changes.
+
+---
+
+## Design Philosophy
+
+MOS favors simplicity, transparency, and modularity.
+
+- No hidden services
+- No telemetry
+- No forced cloud dependencies
+- Features can be added or removed via plugins
+
+You install only what you actually need.
 
 ---
 

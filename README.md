@@ -1,3 +1,11 @@
+<picture>
+  <div align="center">
+  <source media="(prefers-color-scheme: dark)" srcset="./images/mos-white.png">
+  <source media="(prefers-color-scheme: light)" srcset="./images/mos-black.png">
+  <img src="./images/mos-black.png" width="300" alt="Logo">
+  </div>
+</picture>
+
 # MOS – a Minimal Operating System for Home Servers
 
 _(No, it's not an acronym. Or maybe it is.)_

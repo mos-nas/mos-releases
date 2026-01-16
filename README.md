@@ -60,7 +60,7 @@ This combination enables a flexible, efficient, and easy‑to‑manage storage s
 
 Additional storage technologies are available via **MOS Hub** as optional driver plugins, including:
 
-- **[NonRAID](https://github.com/qvr/nonraid)** (plugin)
+- **[nonraid](https://github.com/qvr/nonraid)** (plugin)
 
 This modular approach keeps the core system lightweight while allowing advanced storage features to be added when needed.
 

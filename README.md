@@ -9,6 +9,16 @@ The primary goal of MOS is to provide a simple, reliable, and low‑overhead pla
 This project started as a personal solution, and at some point I decided to **release it publicly to see if it resonates with others**.  
 MOS is still evolving, but the core ideas are already in place.
 
+## Screenshots
+<div align="center">
+  <a href="./images/2026-01-16_10-39.png">
+    <img src="./images/2026-01-16_10-39.png" width="300">
+  </a>
+  <a href="./images/2026-01-16_10-41.png">
+    <img src="./images/2026-01-16_10-41.png" width="300">
+  </a>
+</div>
+
 ---
 
 ## Features

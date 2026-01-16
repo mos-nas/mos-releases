@@ -32,17 +32,17 @@ jobs:
         # Get JSONs
         ROOTFS_JSON=$(curl -s --request GET \
             --url "https://api.github.com/repos/ich777/mos-rootfs/releases?per_page=50" \
-            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
         KERNEL_JSON=$(curl -s --request GET \
             --url "https://api.github.com/repos/ich777/mos-kernel/releases?per_page=50" \
-            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
         GRUB_JSON=$(curl -s --request GET \
             --url "https://api.github.com/repos/ich777/mos-grub/releases/latest" \
-            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
         GRUB_DEB=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb")) | .id')
@@ -70,7 +70,7 @@ jobs:
 
         # Get mos-release.json
         RELEASE_JSON=$(curl -s -L \
-          --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Accept: application/octet-stream" \
           --header "X-GitHub-Api-Version: 2022-11-28" \
           "https://api.github.com/repos/ich777/mos-rootfs/releases/assets/$ASSET_RELEASE_JSON")
@@ -90,7 +90,7 @@ jobs:
         download_asset() {
           echo "Downloading file: ${2##*/}"
           curl --progress-bar -L \
-            --header "Authorization: Bearer ${{ secrets.MOS_TOKEN }}" \
+            --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "Accept: application/octet-stream" \
             --header "X-GitHub-Api-Version: 2022-11-28" \
             --output "$2" \
@@ -134,7 +134,7 @@ jobs:
         mkdir -p $PACKAGE/grub/{fonts,locale}
 
         # Download mos-boot-files
-        git clone https://oauth2:${{ secrets.MOS_TOKEN }}@github.com/ich777/mos-boot-files $WORKDIR/mos-boot-files
+        git clone https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com/ich777/mos-boot-files $WORKDIR/mos-boot-files
 
         # Copy necessary mos-boot-files to package directory
         cp -R $WORKDIR/mos-boot-files/config $WORKDIR/mos-boot-files/grub $PACKAGE

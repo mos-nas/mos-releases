@@ -5,7 +5,7 @@
   </picture>
  </div>
 
-# MOS – a Minimal Operating System for Home Servers
+# MOS – A Practical OS for Homelabs and Self‑Hosting
 
 _(No, it's not an acronym. Or maybe it is.)_
 

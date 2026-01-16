@@ -139,6 +139,9 @@ jobs:
         # Copy necessary mos-boot-files to package directory
         cp -R $WORKDIR/mos-boot-files/config $WORKDIR/mos-boot-files/grub $PACKAGE
 
+        # Create directories
+        mkdir -p $PACKAGE/optional/{modprobe.d,packages} $PACKAGE/optional/scripts/cron
+
         # Create 2G image file
         dd if=/dev/zero of=$WORKDIR/mos_amd64.img bs=1M count=2048
 

@@ -19,15 +19,7 @@ By default, MOS comes with support for:
 - **LXC**
 - **QEMU** (frontend still in development, API has almost full support)
 
-Alongside a set of essential system tools, including:
-
-- **Samba**
-- **NFS**
-- **NUT**
-- **Cron**
-- **...**
-
-Remote networking and access services such as **Wireguard**, **Tailscale** and **Netbird** are also supported and can be managed via the **command line interface (CLI)**.
+Alongside a set of essential system tools.
 
 ---
 

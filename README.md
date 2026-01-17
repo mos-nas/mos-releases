@@ -26,6 +26,8 @@ MOS is still evolving, but the core ideas are already in place.
   </a>
 </div>
 
+### SWAGGER REST API: http://yourMOSip/api-docs
+
 ---
 
 ## Features

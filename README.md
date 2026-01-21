@@ -1,9 +1,11 @@
 <div align="center">
   <picture>
-  <source srcset="./images/mos-black.png" media="(prefers-color-scheme: light)">
-  <img src="./images/mos-white.png" width="300">
+    <source srcset="./images/mos-black.png" media="(prefers-color-scheme: light)">
+    <img src="./images/mos-white.png" width="300">
   </picture>
- </div>
+</div>
+
+[![Create MOS Release](https://github.com/ich777/mos-releases/actions/workflows/create_release.yml/badge.svg?branch=master)](https://github.com/ich777/mos-releases/actions/workflows/create_release.yml)
 
 # MOS – A Practical OS for Homelabs and Self‑Hosting
 

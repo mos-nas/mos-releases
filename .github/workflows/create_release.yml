@@ -45,6 +45,8 @@ jobs:
             --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
+        MEMTEST_V=$(curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/ich777/mos-memtest86plus/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+
         GRUB_DEB=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb")) | .id')
         GRUB_DEB_MD5=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb.md5")) | .id')
 
@@ -118,6 +120,21 @@ jobs:
         download_asset "kernel" "$PACKAGE/microcode.md5" "$ASSET_MICROCODE_MD5"
         download_asset "grub" "$WORKDIR/grub.deb" "$GRUB_DEB"
         download_asset "grub" "$WORKDIR/grub.deb.md5" "$GRUB_DEB_MD5"
+
+        # Download Memtest86+
+        echo "Downloading file: memtest-$MEMTEST_V.tar.gz"
+        wget -q -O $WORKDIR/memtest-$MEMTEST_V.tar.gz https://github.com/ich777/mos-memtest86plus/releases/download/v$MEMTEST_V/memtest-$MEMTEST_V.tar.gz
+        echo "Downloading file: memtest-$MEMTEST_V.tar.gz.md5"
+        wget -q -O $WORKDIR/memtest-$MEMTEST_V.tar.gz.md5 https://github.com/ich777/mos-memtest86plus/releases/download/v$MEMTEST_V/memtest-$MEMTEST_V.tar.gz.md5
+        if [ "$(md5sum $WORKDIR/memtest-$MEMTEST_V.tar.gz | awk '{print $1}')" == "$(cat $WORKDIR/memtest-$MEMTEST_V.tar.gz.md5)" ] ; then
+          echo "md5 OK"
+        else
+          echo "md5 ERROR"
+          exit 1
+        fi
+
+        # Unpack Memtest86+
+        tar -C $PACKAGE/ -xf $WORKDIR/memtest-$MEMTEST_V.tar.gz
 
         # Install GRUB
         apt -y install $WORKDIR/grub.deb

@@ -264,6 +264,37 @@ jobs:
       run: |
         wget ${{ secrets.PUSH_URL }} --post-data "title=MOS&message=New MOS release: ${{ env.VERSION }} available&priority=5" &>/dev/null
   
-    - name: Cleanup
+    - name: Set notification variables on success
+      if: success()
+      run: |
+        echo "NOTIFICATION_PRIORITY=0" >> $GITHUB_ENV
+        echo "NOTIFICATION_MESSAGE=https://github.com/ich777/mos-releases/releases/tag/${{ env.VERSION }}" >> $GITHUB_ENV
+
+    - name: Cleanup & Notification
       if: always()
-      run: rm -rf ${{ github.workspace }}/* ${{ github.workspace }}/.*
+      run: |
+        # Discord notification function
+        discord_push_notification() {
+          if [ $3 -ge 1 ]; then
+            COLOR=16711680
+          else
+            COLOR=65280
+          fi
+
+          data=$(cat <<EOF
+        {
+          "embeds": [{
+            "title": "${1}",
+            "description": "${2}",
+            "color": ${COLOR}
+          }]
+        }
+        EOF
+        )
+          curl -H "Content-Type: application/json" -d "$data" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+        }
+
+        if [ ! -z "${{ env.NOTIFICATION_PRIORITY }}" ] ; then
+          discord_push_notification "MOS ${{ env.VERSION }}" "${{ env.NOTIFICATION_MESSAGE }}" "${{ env.NOTIFICATION_PRIORITY }}"
+        fi
+        rm -rf ${{ github.workspace }}/* ${{ github.workspace }}/.*

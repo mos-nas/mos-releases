@@ -5,7 +5,7 @@
 Please **do not** report security vulnerabilities through public GitHub issues.
 
 Instead, please email:
-**admin@minenet.at**
+**admin@mos-official.net**
 
 As this is an Open Source project maintained by an individual, responses and fixes are provided on a **best-effort basis**. I'll do my best to respond as soon as possible.
 

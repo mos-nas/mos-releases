@@ -47,8 +47,8 @@ jobs:
 
         MEMTEST_V=$(curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/ich777/mos-memtest86plus/releases/latest | jq -r '.tag_name' | sed 's/^v//')
 
-        GRUB_DEB=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb")) | .id')
-        GRUB_DEB_MD5=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith(".deb.md5")) | .id')
+        GRUB_DEB=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith("amd64.deb")) | .id')
+        GRUB_DEB_MD5=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith("amd64.deb.md5")) | .id')
 
         # Set VERSION
         if [ -z "${{ github.event.inputs.mos_version }}" ] ; then

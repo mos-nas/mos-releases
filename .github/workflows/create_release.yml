@@ -11,7 +11,7 @@ on:
 
 jobs:
   create_release:
-    runs-on: self-hosted
+    runs-on: [self-hosted, X64]
 
     steps:
     - name: Checkout repository

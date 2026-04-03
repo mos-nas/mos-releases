@@ -1,4 +1,4 @@
-name: Create MOS Release
+name: Create MOS Release ARM64
 
 on:
   # Allow to trigger action manually

@@ -19,6 +19,19 @@ jobs:
       with:
         fetch-depth: 1
 
+    - name: Trigger mos-releases arm64 build form workflow
+      if: success()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          await github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: 'mos-releases',
+            workflow_id: 'create_release_arm.yml',
+            ref: 'master'
+          })
+
     - name: Install dependencies
       run: apt-get update && apt-get -y install parted mtools dosfstools zip wget
 
@@ -220,45 +233,31 @@ jobs:
         draft: false
         prerelease: ${{ env.PRERELEASE }}
 
-    - name: Upload xz Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create and Upload Release
+      uses: softprops/action-gh-release@v2
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/mos_amd64.img.xz
-        asset_name: mos_amd64.img.xz
-        asset_content_type: application/x-xz
+        prerelease: ${{ env.PRERELEASE }}
+        tag_name: ${{ env.VERSION }}
+        files: |
+          ${{ github.workspace }}/mos_${{ env.VERSION }}_amd64.zip
+          ${{ github.workspace }}/mos_${{ env.VERSION }}_amd64.zip.md5
+          ${{ github.workspace }}/mos_amd64.img.xz
+          ${{ github.workspace }}/mos_amd64.img.xz.md5
+        overwrite_files: true
+        name: "MOS ${{ env.VERSION }}"
+        body: |
+          MOS Release: v${{ env.VERSION }}
+          Note: MOS only supports UEFI boot by default
 
-    - name: Upload xz md5 to Release
-      uses: actions/upload-release-asset@v1
+          ### Release contents:
+          - [mos_${{ env.VERSION }}_amd64.zip](https://github.com/ich777/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_amd64.zip) - for installation to physical media
+            (The disk must be formatted with FAT32 and the disk must have the label: `MOS`)
+          - [mos_${{ env.VERSION }}_arm64.zip](https://github.com/ich777/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_arm64.zip) - for installation to physical media
+            (The disk must be formatted with FAT32 and the disk must have the label: `MOS`, additionally possibly needs a device tree file)
+          - [mos_amd64.img.xz](https://github.com/ich777/mos-releases/releases/download/${{ env.VERSION }}/mos_amd64.img.xz) - for installation to VMs (Min Reqs: 2 Cores + 6GB RAM)
+            (To extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/mos_amd64.img.xz.md5
-        asset_name: mos_amd64.img.xz.md5
-        asset_content_type: text/plain
-
-    - name: Upload zip Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/mos_${{ env.VERSION }}_amd64.zip
-        asset_name: mos_${{ env.VERSION }}_amd64.zip
-        asset_content_type: application/zip
-
-    - name: Upload zip md5 to Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/mos_${{ env.VERSION }}_amd64.zip.md5
-        asset_name: mos_${{ env.VERSION }}_amd64.zip.md5
-        asset_content_type: text/plain
 
     - name: Send Message
       run: |

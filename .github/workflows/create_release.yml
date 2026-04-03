@@ -213,26 +213,6 @@ jobs:
         echo "VERSION=${VERSION}
         PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ env.VERSION }}
-        release_name: "MOS ${{ env.VERSION }}"
-        body: |
-          MOS Release: v${{ env.VERSION }}
-          Note: MOS only supports UEFI boot by default
-
-          ### Release contents:
-          - [mos_${{ env.VERSION }}_amd64.zip](https://github.com/ich777/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_amd64.zip) - for installation to physical media
-            (The disk must be formatted with FAT32 and the disk must have the label: `MOS`)
-          - [mos_amd64.img.xz](https://github.com/ich777/mos-releases/releases/download/${{ env.VERSION }}/mos_amd64.img.xz) - for installation to VMs (Min Reqs: 2 Cores + 6GB RAM)
-            (To extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
-        draft: false
-        prerelease: ${{ env.PRERELEASE }}
-
     - name: Create and Upload Release
       uses: softprops/action-gh-release@v2
       with:

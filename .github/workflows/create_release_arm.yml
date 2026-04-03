@@ -176,12 +176,14 @@ jobs:
     - name: Create and Upload Release
       uses: softprops/action-gh-release@v2
       with:
+        prerelease: ${{ env.PRERELEASE }}
         tag_name: ${{ env.VERSION }}
         files: |
           ${{ github.workspace }}/mos_${{ env.VERSION }}_arm64.zip
           ${{ github.workspace }}/mos_${{ env.VERSION }}_arm64.zip.md5
         overwrite_files: true
-        name: |
+        name: "MOS ${{ env.VERSION }}"
+        body: |
           MOS Release: v${{ env.VERSION }}
           Note: MOS only supports UEFI boot by default
 
@@ -192,7 +194,6 @@ jobs:
             (The disk must be formatted with FAT32 and the disk must have the label: `MOS`, additionally possibly needs a device tree file)
           - [mos_amd64.img.xz](https://github.com/ich777/mos-releases/releases/download/${{ env.VERSION }}/mos_amd64.img.xz) - for installation to VMs (Min Reqs: 2 Cores + 6GB RAM)
             (To extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
-        body: "Addon driver releases for MOS"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

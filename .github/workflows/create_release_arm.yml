@@ -150,8 +150,8 @@ jobs:
         }
         { print }
         ' $PACKAGE/grub/grub.cfg > $PACKAGE/grub/grub.cfg.tmp && mv $PACKAGE/grub/grub.cfg.tmp $PACKAGE/grub/grub.cfg
-
         sed -i '/menuentry "MOS" {/a\  # If necessary uncomment the following line and add your device tree file to the root from your boot device\n  #devicetree /rk3588-orangepi-5-plus.dtb' $PACKAGE/grub/grub.cfg
+        sed -i 's|\initrd /microcode /rootfs|initrd /rootfs|' $PACKAGE/grub/grub.cfg
 
         # Create zip archive from package directory
         cd $PACKAGE

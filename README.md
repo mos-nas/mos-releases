@@ -7,7 +7,7 @@
 
 [![Create MOS Release](https://github.com/ich777/mos-releases/actions/workflows/create_release.yml/badge.svg?branch=master)](https://github.com/ich777/mos-releases/actions/workflows/create_release.yml)
 
-# MOS - is a Modular Operation System for Servers and Homelabs
+# MOS - is a Modular Operating System for Servers and Homelabs
 
 _(No, it's not an acronym. Or maybe it is.)_
 

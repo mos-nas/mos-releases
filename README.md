@@ -133,7 +133,7 @@ Related repositories and components of the MOS ecosystem:
 ### MOS Documentation
 - **[MOS Docs](https://github.com/ich777/mos-docs)**
 
-### Frontende and API 
+### Frontend and API 
 - **[MOS Frontend](https://github.com/ich777/mos-frontend)**
 - **[MOS API](https://github.com/ich777/mos-api)**
 

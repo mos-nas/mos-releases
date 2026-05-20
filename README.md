@@ -38,7 +38,7 @@ By default, MOS comes with support for:
 
 - **Docker**
 - **LXC**
-- **QEMU** (frontend still in development, API has almost full support)
+- **QEMU**
 
 Alongside a set of essential system tools.
 
@@ -92,8 +92,6 @@ Everything runs locally and stays fully under your control.
 ---
 
 ## Project Status & Disclaimer
-
-MOS is currently in a **very early stage of development**.
 
 The operating system is provided **“as is”**.  
 Bugs **can and will occur** at this stage.
@@ -175,12 +173,11 @@ These requirements ensure stable operation of containerized workloads, virtualiz
 
 ## TODO
 
-MOS is at the very beginning of its journey.
+MOS is at the beginning of its journey.
 
-There are **a lot of things left to do**, including missing features, improvements, refactoring, and documentation.  
 While the project is still evolving, **breaking changes are intentionally avoided whenever possible** in order to maintain stability for early users.
 
-If you are interested in contributing or experimenting with MOS at an early stage, feedback and contributions are highly appreciated.
+If you are interested in contributing or experimenting with MOS, feedback and contributions are highly appreciated.
 
 ---
 

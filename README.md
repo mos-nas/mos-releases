@@ -5,7 +5,7 @@
   </picture>
 </div>
 
-[![Create MOS Release](https://github.com/ich777/mos-releases/actions/workflows/create_release.yml/badge.svg?branch=master)](https://github.com/ich777/mos-releases/actions/workflows/create_release.yml)
+[![Create MOS Release](https://github.com/mos-nas/mos-releases/actions/workflows/create_release.yml/badge.svg?branch=master)](https://github.com/mos-nas/mos-releases/actions/workflows/create_release.yml)
 
 # MOS - is a Modular Operating System for Servers and Homelabs
 
@@ -129,31 +129,31 @@ MOS is intended for:
 Related repositories and components of the MOS ecosystem:
 
 ### MOS Documentation
-- **[MOS Docs](https://github.com/ich777/mos-docs)**
+- **[MOS Docs](https://github.com/mos-nas/mos-docs)**
 
 ### Frontend and API 
-- **[MOS Frontend](https://github.com/ich777/mos-frontend)**
-- **[MOS API](https://github.com/ich777/mos-api)**
+- **[MOS Frontend](https://github.com/mos-nas/mos-frontend)**
+- **[MOS API](https://github.com/mos-nas/mos-api)**
 
 ### Base OS:
-- **[MOS Kernel](https://github.com/ich777/mos-kernel)**
-- **[MOS rootfs](https://github.com/ich777/mos-rootfs)**
+- **[MOS Kernel](https://github.com/mos-nas/mos-kernel)**
+- **[MOS rootfs](https://github.com/mos-nas/mos-rootfs)**
 
 ### Base Packages:
-- **[MOS Docker](https://github.com/ich777/mos-moby)**
-- **[MOS LXC](https://github.com/ich777/mos-lxc)**
-- **[MOS QEMU](https://github.com/ich777/mos-qemu)**
+- **[MOS Docker](https://github.com/mos-nas/mos-moby)**
+- **[MOS LXC](https://github.com/mos-nas/mos-lxc)**
+- **[MOS QEMU](https://github.com/mos-nas/mos-qemu)**
 
 ### MOS Specific Packages:
-- **[MOS Notify](https://github.com/ich777/mos-notify)**
-- **[MOS image-sha](https://github.com/ich777/mos-image-sha)**
-- **[MOS mergerfs](https://github.com/ich777/mos-mergerfs)**
-- **[MOS SnapRAID](https://github.com/ich777/mos-snapraid)**
-- **[MOS docker-watchdog](https://github.com/ich777/mos-docker-watchdog)**
+- **[MOS Notify](https://github.com/mos-nas/mos-notify)**
+- **[MOS image-sha](https://github.com/mos-nas/mos-image-sha)**
+- **[MOS mergerfs](https://github.com/mos-nas/mos-mergerfs)**
+- **[MOS SnapRAID](https://github.com/mos-nas/mos-snapraid)**
+- **[MOS docker-watchdog](https://github.com/mos-nas/mos-docker-watchdog)**
 
 ### MOS Misc Custom Repositories:
-- **[MOS Boot Files](https://github.com/ich777/mos-boot-files)**
-- **[MOS GRUB](https://github.com/ich777/mos-grub)**
+- **[MOS Boot Files](https://github.com/mos-nas/mos-boot-files)**
+- **[MOS GRUB](https://github.com/mos-nas/mos-grub)**
 
 ---
 

@@ -44,21 +44,21 @@ jobs:
 
         # Get JSONs
         ROOTFS_JSON=$(curl -s --request GET \
-            --url "https://api.github.com/repos/mos-nas/mos-rootfs/releases?per_page=50" \
+            --url "https://api.github.com/repos/${{ github.repository_owner }}/mos-rootfs/releases?per_page=50" \
             --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
         KERNEL_JSON=$(curl -s --request GET \
-            --url "https://api.github.com/repos/mos-nas/mos-kernel/releases?per_page=50" \
+            --url "https://api.github.com/repos/${{ github.repository_owner }}/mos-kernel/releases?per_page=50" \
             --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
         GRUB_JSON=$(curl -s --request GET \
-            --url "https://api.github.com/repos/mos-nas/mos-grub/releases/latest" \
+            --url "https://api.github.com/repos/${{ github.repository_owner }}/mos-grub/releases/latest" \
             --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             --header "X-GitHub-Api-Version: 2022-11-28")
 
-        MEMTEST_V=$(curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/mos-nas/mos-memtest86plus/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+        MEMTEST_V=$(curl -s -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} https://api.github.com/repos/${{ github.repository_owner }}/mos-memtest86plus/releases/latest | jq -r '.tag_name' | sed 's/^v//')
 
         GRUB_DEB=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith("amd64.deb")) | .id')
         GRUB_DEB_MD5=$(echo $GRUB_JSON | jq -r '.assets[] | select(.name | startswith("mos-grub") and endswith("amd64.deb.md5")) | .id')
@@ -88,7 +88,7 @@ jobs:
           --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --header "Accept: application/octet-stream" \
           --header "X-GitHub-Api-Version: 2022-11-28" \
-          "https://api.github.com/repos/mos-nas/mos-rootfs/releases/assets/$ASSET_RELEASE_JSON")
+          "https://api.github.com/repos/${{ github.repository_owner }}/mos-rootfs/releases/assets/$ASSET_RELEASE_JSON")
 
         # Get recommended Kernel version for release
         RECOMMENDED_KERNEL=$(echo $RELEASE_JSON | jq -r '.mos.recommended_kernel')
@@ -109,7 +109,7 @@ jobs:
             --header "Accept: application/octet-stream" \
             --header "X-GitHub-Api-Version: 2022-11-28" \
             --output "$2" \
-            "https://api.github.com/repos/mos-nas/mos-$1/releases/assets/$3"
+            "https://api.github.com/repos/${{ github.repository_owner }}/mos-$1/releases/assets/$3"
         
           if [[ "$2" == *.md5 ]]; then
             echo "Checking md5"
@@ -136,9 +136,9 @@ jobs:
 
         # Download Memtest86+
         echo "Downloading file: memtest-$MEMTEST_V.tar.gz"
-        wget -q -O $WORKDIR/memtest-$MEMTEST_V.tar.gz https://github.com/mos-nas/mos-memtest86plus/releases/download/v$MEMTEST_V/memtest-$MEMTEST_V.tar.gz
+        wget -q -O $WORKDIR/memtest-$MEMTEST_V.tar.gz https://github.com/${{ github.repository_owner }}/mos-memtest86plus/releases/download/v$MEMTEST_V/memtest-$MEMTEST_V.tar.gz
         echo "Downloading file: memtest-$MEMTEST_V.tar.gz.md5"
-        wget -q -O $WORKDIR/memtest-$MEMTEST_V.tar.gz.md5 https://github.com/mos-nas/mos-memtest86plus/releases/download/v$MEMTEST_V/memtest-$MEMTEST_V.tar.gz.md5
+        wget -q -O $WORKDIR/memtest-$MEMTEST_V.tar.gz.md5 https://github.com/${{ github.repository_owner }}/mos-memtest86plus/releases/download/v$MEMTEST_V/memtest-$MEMTEST_V.tar.gz.md5
         if [ "$(md5sum $WORKDIR/memtest-$MEMTEST_V.tar.gz | awk '{print $1}')" == "$(cat $WORKDIR/memtest-$MEMTEST_V.tar.gz.md5)" ] ; then
           echo "md5 OK"
         else
@@ -164,7 +164,7 @@ jobs:
         mkdir -p $PACKAGE/grub/{fonts,locale}
 
         # Download mos-boot-files
-        git clone https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com/mos-nas/mos-boot-files $WORKDIR/mos-boot-files
+        git clone https://oauth2:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/mos-boot-files $WORKDIR/mos-boot-files
 
         # Copy necessary mos-boot-files to package directory
         cp -R $WORKDIR/mos-boot-files/config $WORKDIR/mos-boot-files/grub $PACKAGE
@@ -230,11 +230,11 @@ jobs:
           Note: MOS only supports UEFI boot by default
 
           ### Release contents:
-          - [mos_${{ env.VERSION }}_amd64.zip](https://github.com/mos-nas/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_amd64.zip) - for installation to physical media
+          - [mos_${{ env.VERSION }}_amd64.zip](https://github.com/${{ github.repository_owner }}/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_amd64.zip) - for installation to physical media
             (The disk must be formatted with FAT32 and the disk must have the label: `MOS`)
-          - [mos_${{ env.VERSION }}_arm64.zip](https://github.com/mos-nas/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_arm64.zip) - for installation to physical media
+          - [mos_${{ env.VERSION }}_arm64.zip](https://github.com/${{ github.repository_owner }}/mos-releases/releases/download/${{ env.VERSION }}/mos_${{ env.VERSION }}_arm64.zip) - for installation to physical media
             (The disk must be formatted with FAT32 and the disk must have the label: `MOS`, additionally possibly needs a device tree file)
-          - [mos_amd64.img.xz](https://github.com/mos-nas/mos-releases/releases/download/${{ env.VERSION }}/mos_amd64.img.xz) - for installation to VMs (Min Reqs: 2 Cores + 6GB RAM)
+          - [mos_amd64.img.xz](https://github.com/${{ github.repository_owner }}/mos-releases/releases/download/${{ env.VERSION }}/mos_amd64.img.xz) - for installation to VMs (Min Reqs: 2 Cores + 6GB RAM)
             (To extract the image you need to use this command on Linux: `unxz --decompress mos_amd64.img.xz`)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -247,7 +247,7 @@ jobs:
       if: success()
       run: |
         echo "NOTIFICATION_PRIORITY=0" >> $GITHUB_ENV
-        echo "NOTIFICATION_MESSAGE=https://github.com/mos-nas/mos-releases/releases/tag/${{ env.VERSION }}" >> $GITHUB_ENV
+        echo "NOTIFICATION_MESSAGE=https://github.com/${{ github.repository_owner }}/mos-releases/releases/tag/${{ env.VERSION }}" >> $GITHUB_ENV
 
     - name: Cleanup & Notification
       if: always()

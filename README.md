@@ -16,7 +16,7 @@ _(No, it's not an acronym. Or maybe it is.)_
 The primary goal of MOS is to provide a simple, reliable, and low‑overhead platform for self‑hosting, virtualization, and homelab environments.
 
 This project started as a personal solution, and at some point I decided to **release it publicly to see if it resonates with others**.  
-MOS is still evolving, but the core ideas are already in place.
+MOS is still evolving!
 
 ## Screenshots
 <div align="center">
@@ -76,8 +76,12 @@ MOS supports hardware drivers distributed as **optional plugins**, including:
 
 - **NVIDIA drivers**
 - **DVB drivers**
-
-Additional drivers and plugins are planned and will be added over time.
+- **Backup plugin**
+- **Nonraid drivers** (with UI support)
+- **ZFS drivers** (without UI support)
+- **SR-IOV i915 Driver**
+- **Google Coral Driver**
+- **...and many more**
 
 ---
 
@@ -94,7 +98,7 @@ Everything runs locally and stays fully under your control.
 ## Project Status & Disclaimer
 
 The operating system is provided **“as is”**.  
-Bugs **can and will occur** at this stage.
+Bugs **can occur** at this stage.
 
 While issues affecting the filesystem are not expected, you should **always keep backups of important data**.
 
@@ -118,7 +122,7 @@ What began as a small personal solution gradually evolved into a more complete o
 MOS is intended for:
 
 - Homelab users
-- Self‑hosters
+- Selfhosters
 - Developers
 - Anyone looking for a minimal, efficient server OS with modern tooling
 
@@ -174,8 +178,6 @@ These requirements ensure stable operation of containerized workloads, virtualiz
 ## TODO
 
 MOS is at the beginning of its journey.
-
-While the project is still evolving, **breaking changes are intentionally avoided whenever possible** in order to maintain stability for early users.
 
 If you are interested in contributing or experimenting with MOS, feedback and contributions are highly appreciated.
 
